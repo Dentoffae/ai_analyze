@@ -76,10 +76,15 @@ class OpenAIService:
     "weaknesses": ["слабая сторона 1", "слабая сторона 2", ...],
     "unique_offers": ["уникальное предложение 1", "уникальное предложение 2", ...],
     "recommendations": ["рекомендация 1", "рекомендация 2", ...],
+    "design_score": 7,
+    "animation_potential": 6,
+    "animation_potential_analysis": "Краткий разбор: насколько текст подходит для видео, motion-рекламы, анимированных баннеров",
     "summary": "Краткое резюме анализа"
 }
 
 Важно:
+- design_score (0-10): оцени «дизайн» текста — структуру, ясность, tone of voice, визуальную иерархию при подаче (заголовки, CTA, форматирование)
+- animation_potential (0-10): насколько текст/сообщение можно эффективно использовать в анимированном контенте
 - Каждый массив должен содержать 3-5 пунктов
 - Пиши на русском языке
 - Будь конкретен и практичен в рекомендациях"""
@@ -112,10 +117,16 @@ class OpenAIService:
                 weaknesses=data.get("weaknesses", []),
                 unique_offers=data.get("unique_offers", []),
                 recommendations=data.get("recommendations", []),
+                design_score=data.get("design_score", 5),
+                animation_potential=data.get("animation_potential", 5),
+                animation_potential_analysis=data.get("animation_potential_analysis", ""),
                 summary=data.get("summary", "")
             )
             
-            logger.info(f"  Результат: {len(result.strengths)} сильных, {len(result.weaknesses)} слабых сторон")
+            logger.info(
+                f"  Результат: {len(result.strengths)} сильных, {len(result.weaknesses)} слабых сторон, "
+                f"design_score={result.design_score}/10, animation_potential={result.animation_potential}/10"
+            )
             logger.info("=" * 50)
             
             return result
@@ -140,16 +151,18 @@ class OpenAIService:
 {
     "description": "Детальное описание того, что изображено",
     "marketing_insights": ["инсайт 1", "инсайт 2", ...],
-    "visual_style_score": 7,
+    "design_score": 7,
     "visual_style_analysis": "Анализ визуального стиля конкурента",
+    "animation_potential": 8,
+    "animation_potential_analysis": "Какие элементы можно анимировать, motion-потенциал, ограничения",
     "recommendations": ["рекомендация 1", "рекомендация 2", ...]
 }
 
 Важно:
-- visual_style_score от 0 до 10
+- design_score от 0 до 10 (цвета, типографика, композиция, UX/UI)
+- animation_potential от 0 до 10 (слои, динамика, пригодность для motion/рекламы)
 - Каждый массив должен содержать 3-5 пунктов
-- Пиши на русском языке
-- Оценивай: цветовую палитру, типографику, композицию, UX/UI элементы"""
+- Пиши на русском языке"""
 
         start_time = time.time()
         logger.info("  Отправка запроса к Vision API...")
@@ -190,12 +203,17 @@ class OpenAIService:
             result = ImageAnalysis(
                 description=data.get("description", ""),
                 marketing_insights=data.get("marketing_insights", []),
-                visual_style_score=data.get("visual_style_score", 5),
+                design_score=data.get("design_score", data.get("visual_style_score", 5)),
                 visual_style_analysis=data.get("visual_style_analysis", ""),
+                animation_potential=data.get("animation_potential", 5),
+                animation_potential_analysis=data.get("animation_potential_analysis", ""),
                 recommendations=data.get("recommendations", [])
             )
             
-            logger.info(f"  Результат: оценка стиля {result.visual_style_score}/10")
+            logger.info(
+                f"  Результат: design_score={result.design_score}/10, "
+                f"animation_potential={result.animation_potential}/10"
+            )
             logger.info(f"  Инсайтов: {len(result.marketing_insights)}, рекомендаций: {len(result.recommendations)}")
             logger.info("=" * 50)
             

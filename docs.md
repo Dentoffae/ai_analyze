@@ -105,6 +105,9 @@ curl -X POST "http://localhost:8000/analyze_text" \
       "Указать уникальные технологические преимущества",
       "Включить отзывы клиентов"
     ],
+    "design_score": 6,
+    "animation_potential": 7,
+    "animation_potential_analysis": "Текст хорошо подходит для коротких motion-роликов и анимированных баннеров: чёткие УТП и цифры легко разбить на слайды.",
     "summary": "Компания позиционирует себя как надёжного партнёра с опытом, но маркетинговые материалы требуют конкретизации для повышения конверсии."
   },
   "error": null
@@ -130,8 +133,10 @@ curl -X POST "http://localhost:8000/analyze_image" \
       "Контрастная цветовая схема выделяет CTA",
       "Минималистичный дизайн не перегружает восприятие"
     ],
-    "visual_style_score": 7,
+    "design_score": 7,
     "visual_style_analysis": "Современный корпоративный стиль с хорошим балансом элементов. Типографика читабельна, но можно улучшить отступы.",
+    "animation_potential": 8,
+    "animation_potential_analysis": "Крупный заголовок, градиентный фон и CTA-кнопка легко анимируются в motion-рекламе; минималистичная композиция упрощает адаптацию под видеоформаты.",
     "recommendations": [
       "Добавить социальное доказательство (отзывы, рейтинги)",
       "Увеличить размер CTA кнопки",
@@ -167,6 +172,9 @@ curl -X POST "http://localhost:8000/parse_demo" \
       "weaknesses": ["..."],
       "unique_offers": ["..."],
       "recommendations": ["..."],
+      "design_score": 7,
+      "animation_potential": 6,
+      "animation_potential_analysis": "...",
       "summary": "..."
     }
   },
@@ -294,22 +302,27 @@ curl -X GET "http://localhost:8000/health"
 ### CompetitorAnalysis
 ```typescript
 {
-  strengths: string[]      // Сильные стороны
-  weaknesses: string[]     // Слабые стороны
-  unique_offers: string[]  // Уникальные предложения
-  recommendations: string[] // Рекомендации
-  summary: string          // Общее резюме
+  strengths: string[]               // Сильные стороны
+  weaknesses: string[]              // Слабые стороны
+  unique_offers: string[]           // Уникальные предложения
+  recommendations: string[]         // Рекомендации
+  design_score: number              // Оценка дизайна текста 0-10
+  animation_potential: number       // Потенциал для анимации 0-10
+  animation_potential_analysis: string // Разбор animation potential
+  summary: string                   // Общее резюме
 }
 ```
 
 ### ImageAnalysis
 ```typescript
 {
-  description: string           // Описание изображения
-  marketing_insights: string[]  // Маркетинговые инсайты
-  visual_style_score: number    // Оценка 0-10
-  visual_style_analysis: string // Анализ стиля
-  recommendations: string[]     // Рекомендации
+  description: string                  // Описание изображения
+  marketing_insights: string[]         // Маркетинговые инсайты
+  design_score: number                 // Оценка визуального стиля 0-10
+  visual_style_analysis: string        // Анализ стиля
+  animation_potential: number          // Потенциал для анимации 0-10
+  animation_potential_analysis: string // Разбор animation potential
+  recommendations: string[]            // Рекомендации
 }
 ```
 

@@ -40,6 +40,7 @@ const elements = {
     resultsSection: document.getElementById('results-section'),
     resultsContent: document.getElementById('results-content'),
     closeResultsBtn: document.getElementById('close-results'),
+    closeResultsTopBtn: document.getElementById('close-results-top'),
     
     // Loading
     loadingOverlay: document.getElementById('loading-overlay')
@@ -125,11 +126,13 @@ const ui = {
     showResults(html) {
         elements.resultsContent.innerHTML = html;
         elements.resultsSection.hidden = false;
-        elements.resultsSection.scrollIntoView({ behavior: 'smooth' });
+        document.body.classList.add('results-open');
+        elements.resultsContent.scrollTop = 0;
     },
     
     hideResults() {
         elements.resultsSection.hidden = true;
+        document.body.classList.remove('results-open');
     },
     
     showError(message) {
@@ -148,6 +151,8 @@ const ui = {
     
     renderTextAnalysis(analysis) {
         return `
+            ${this.renderScoreBlock('Оценка дизайна текста', analysis.design_score)}
+            ${this.renderScoreBlock('Потенциал для анимации', analysis.animation_potential, analysis.animation_potential_analysis)}
             ${this.renderResultBlock('Сильные стороны', analysis.strengths, 'strengths')}
             ${this.renderResultBlock('Слабые стороны', analysis.weaknesses, 'weaknesses')}
             ${this.renderResultBlock('Уникальные предложения', analysis.unique_offers, 'unique')}
@@ -168,7 +173,7 @@ const ui = {
     },
     
     renderImageAnalysis(analysis) {
-        const scorePercent = (analysis.visual_style_score / 10) * 100;
+        const designScore = analysis.design_score ?? analysis.visual_style_score ?? 0;
         
         return `
             <div class="result-block">
@@ -183,21 +188,8 @@ const ui = {
                 <p>${analysis.description}</p>
             </div>
             
-            <div class="result-block">
-                <h3>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-                    </svg>
-                    Оценка визуального стиля
-                </h3>
-                <div class="score-display">
-                    <span class="score-value">${analysis.visual_style_score}/10</span>
-                    <div class="score-bar">
-                        <div class="score-fill" style="width: ${scorePercent}%"></div>
-                    </div>
-                </div>
-                <p>${analysis.visual_style_analysis}</p>
-            </div>
+            ${this.renderScoreBlock('Оценка визуального стиля', designScore, analysis.visual_style_analysis)}
+            ${this.renderScoreBlock('Потенциал для анимации', analysis.animation_potential, analysis.animation_potential_analysis)}
             
             ${this.renderResultBlock('Маркетинговые инсайты', analysis.marketing_insights, 'insights')}
             ${this.renderResultBlock('Рекомендации', analysis.recommendations, 'recommendations')}
@@ -226,6 +218,30 @@ const ui = {
             </div>
             
             ${parsed.analysis ? this.renderTextAnalysis(parsed.analysis) : ''}
+        `;
+    },
+    
+    renderScoreBlock(title, score, description = '') {
+        if (score === undefined || score === null) return '';
+        
+        const scorePercent = (score / 10) * 100;
+        
+        return `
+            <div class="result-block">
+                <h3>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                    </svg>
+                    ${title}
+                </h3>
+                <div class="score-display">
+                    <span class="score-value">${score}/10</span>
+                    <div class="score-bar">
+                        <div class="score-fill" style="width: ${scorePercent}%"></div>
+                    </div>
+                </div>
+                ${description ? `<p>${description}</p>` : ''}
+            </div>
         `;
     },
     
@@ -514,6 +530,13 @@ function init() {
     
     // Results
     elements.closeResultsBtn.addEventListener('click', handlers.handleCloseResults.bind(handlers));
+    elements.closeResultsTopBtn.addEventListener('click', handlers.handleCloseResults.bind(handlers));
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !elements.resultsSection.hidden) {
+            handlers.handleCloseResults();
+        }
+    });
     
     // Show default tab
     ui.showTab('text');

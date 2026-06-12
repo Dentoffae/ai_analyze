@@ -58,11 +58,13 @@ python build.py clean
 ```
 desktop/
 ├── main.py          # Главное окно PyQt6
+├── widgets.py       # UI-компоненты (drop zone, результаты, score bar)
 ├── styles.py        # Тёмная тема с cyan акцентами
 ├── api_client.py    # HTTP клиент для backend API
 ├── build.py         # Скрипт сборки .exe
 ├── requirements.txt # Зависимости
-└── README.md        # Этот файл
+└── dist/
+    └── CompetitorMonitor.exe  # Готовый исполняемый файл
 ```
 
 ## ⚠️ Важно
